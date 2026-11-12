@@ -1,0 +1,51 @@
+name: jealth
+description: "J'ealth - Health insights, made simple. A digital health assessment tool (not a medical diagnostic tool)."
+publish_to: 'none'
+
+# Keep in sync with AppConstants.version (enforced by test/core/app_constants_test.dart).
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Material Design 3 component library (decoupled from the Flutter SDK).
+  material_ui: ^1.11.0
+  # State management.
+  flutter_riverpod: ^3.5.0
+  # Declarative navigation.
+  go_router: ^18.1.4
+  # HTTP client for the Phase B FastAPI prediction service.
+  dio: ^5.11.1
+  # Non-sensitive preferences (theme, onboarding, UI preferences, service URL).
+  shared_preferences: ^2.5.6
+  # Encrypted, device-local storage for explicitly saved classification records.
+  flutter_secure_storage: ^11.2.0
+  # Platform share sheet (only ever invoked by an explicit user action).
+  share_plus: ^13.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/OFL.txt
+
+  fonts:
+    - family: PlusJakartaSans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans-400.ttf
+          weight: 400
+        - asset: assets/fonts/PlusJakartaSans-500.ttf
+          weight: 500
+        - asset: assets/fonts/PlusJakartaSans-600.ttf
+          weight: 600
+        - asset: assets/fonts/PlusJakartaSans-700.ttf
+          weight: 700

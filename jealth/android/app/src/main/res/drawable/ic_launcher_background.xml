@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- J'ealth brand gradient: Medical Blue to Teal. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient
+        android:angle="315"
+        android:startColor="#146C94"
+        android:endColor="#16A6A1"
+        android:type="linear" />
+</shape>

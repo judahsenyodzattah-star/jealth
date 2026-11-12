@@ -1,0 +1,47 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Flutter
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+**/flutter/ephemeral/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Unrelated Java upgrade tooling
+.github/modernize/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+*.tmp
+
+# Datasets and patient records
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.db
+*.sqlite
+*.sqlite3
+*.ipynb
+
+# Vercel
+.vercel/
+
+# Operating system
+.DS_Store
+Thumbs.db
