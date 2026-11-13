@@ -1,26 +1,26 @@
 # J'ealth
 
-**AI-Powered Heart Disease Classification** — *Explore Health Through Machine Learning*
+**Digital health assessment** — *Health Insights, Made Simple.*
 
-J'ealth is the Flutter front end of an academic Hospital Heart Disease
-Classification project. It collects ten patient measurements, sends them to a
-prediction service, and shows the class the trained model returns. It also
-presents the project's historical model evaluation and explains the machine
-learning concepts involved.
+J'ealth is a Flutter application for submitting ten health measurements to the
+deployed FastAPI service and reviewing its experimental model output. It also
+presents historical model evaluation and explains the machine-learning
+concepts involved.
 
 > J'ealth is an educational machine learning demonstration. It is not a medical
 > device and it does not provide a diagnosis.
 
-## Project status: Phase A
+## Project status
 
 | | |
 |---|---|
-| Phase A (this repository) | Complete front end and a typed prediction-service interface. |
-| Phase B (not started) | Serve the trained Logistic Regression model through FastAPI and connect it. |
+| Flutter application | Web and native front ends with locally stored preferences and opt-in history. |
+| Prediction API | Deployed FastAPI service at `https://jealth-api.onrender.com`. |
+| Model | The existing deployed Logistic Regression model; it is not part of this Flutter project. |
 
-The app contains **no prediction logic and no model**. Until a prediction
-service address is configured, every submission ends in a
-"Prediction service not connected" screen and nothing is simulated.
+The Flutter app contains no prediction logic and never simulates a result.
+Release builds use the deployed API by default. Local development, custom
+backends and explicitly disconnected builds remain supported.
 
 ## Requirements
 
@@ -57,15 +57,13 @@ flutter analyze
 flutter test
 ```
 
-## Connecting the FastAPI service
+## Prediction service configuration
 
-There are two ways to tell the app where the service is. The address saved in
-Settings wins when both are present.
+The production API address is built in, so users do not need to enter it. A
+custom address saved in Settings takes precedence; clearing that override
+restores the build-time default.
 
-**1. In the app.** Settings → Prediction service → enter the address →
-**Save address**. **Test connection** calls `GET /health`.
-
-**2. At build time.**
+For local development or another backend, set the build-time value:
 
 ```bash
 flutter run -d chrome --dart-define=JEALTH_API_BASE_URL=http://localhost:8000
@@ -73,9 +71,13 @@ flutter run -d chrome --dart-define=JEALTH_API_BASE_URL=http://localhost:8000
 
 | `--dart-define` | Default | Purpose |
 |---|---|---|
-| `JEALTH_API_BASE_URL` | *(empty: not connected)* | Base address of the service |
+| `JEALTH_API_BASE_URL` | `https://jealth-api.onrender.com` | Base address of the service. An explicitly empty value builds a disconnected app. |
 | `JEALTH_PREDICT_PATH` | `/predict` | Path of the prediction endpoint (POST) |
 | `JEALTH_HEALTH_PATH` | `/health` | Path of the health endpoint (GET, any 2xx = reachable) |
+
+Settings → Assessment service can save a runtime override. **Test connection**
+calls `GET /health`. A saved override is stored per browser profile/device;
+different profiles can therefore have different custom addresses.
 
 Addresses to use during development:
 
@@ -87,7 +89,7 @@ Addresses to use during development:
 
 Platform rules to know:
 
-- **Web:** the service must allow the app's origin with CORS (see Phase B).
+- **Web:** the service must allow the app's origin with CORS.
 - **Android:** plain `http://` works in debug builds only. Release builds
   require `https://`.
 - **iOS:** plain `http://` is allowed for local-network addresses only.
@@ -137,25 +139,11 @@ Whole numbers are sent without a decimal point. On the web this includes
 `bmi` (`38`, not `38.0`), because JavaScript has a single number type; declare
 the numeric fields as `float` in the service so both forms are accepted.
 
-## Phase B integration guide
+## Backend integration details
 
-Everything Phase B has to touch is listed here.
-
-1. **Find the trained model.** The notebook and the saved Logistic Regression
-   model were not in the workspace or the shared Drive folder when Phase A was
-   built; only `hospital_synthetic_dataset.xlsx` was found. The service needs
-   the fitted model **together with the exact preprocessing used in training**
-   (category encoding and any scaling), ideally saved as one scikit-learn
-   `Pipeline`.
-2. **Build the FastAPI service** with:
-   - `POST /predict` accepting and returning the JSON above.
-   - `GET /health` returning any 2xx response.
-   - `CORSMiddleware` allowing the web app's origin, the `POST` and `GET`
-     methods, and the `Content-Type` header.
-   - Field names and category spellings exactly as in the dataset columns
-     (`"Male"`/`"Female"`, `"Yes"`/`"No"`).
-3. **Point the app at it** using Settings or `JEALTH_API_BASE_URL`. No Dart
-   code needs to change if the contract above is followed.
+The backend already hosts the existing trained model and implements this
+contract. The Flutter app sends the ten listed fields and validates the
+returned class, score and version before displaying anything.
 
 Integration points in the code:
 
@@ -168,12 +156,8 @@ Integration points in the code:
 | `lib/core/errors/app_exceptions.dart` | Failure types and the user-facing wording for each. |
 | `lib/features/settings/providers/api_settings_controller.dart` | Stores the address entered in Settings. |
 
-If the service ends up with different paths, change only the two
-`--dart-define` values. If it needs different field names, change only
-`PatientInput.toJson()` and `PredictionResult.fromJson()` and their tests.
-
-After connecting, update the wording of `PredictionFailureType.notConfigured`
-in `app_exceptions.dart` if "has not been connected yet" no longer fits.
+The endpoint paths can be overridden with the two path defines if a compatible
+custom backend uses different routes. The JSON contract remains unchanged.
 
 ## What the app verified about the dataset
 
@@ -201,7 +185,7 @@ The file states **no units and no scale descriptions**. The app therefore:
   storage with a key kept in the same browser, so they are not protected from
   someone using the same browser profile. The app says this on its Privacy page.
 - Android backups and device transfer exclude the history.
-- **Clear classification history** (History, Settings and Privacy) deletes every
+- **Clear assessment history** (History, Settings and Privacy) deletes every
   saved record, including unreadable ones.
 - Sharing happens only after the user presses Share and confirms; measurements
   are left out unless the user switches them on.

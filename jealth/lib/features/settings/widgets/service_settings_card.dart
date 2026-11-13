@@ -78,8 +78,7 @@ class _ServiceSettingsCardState extends ConsumerState<ServiceSettingsCard> {
 
     final String statusText;
     if (!config.isConfigured) {
-      statusText =
-          'No assessment service is configured yet.';
+      statusText = 'No assessment service is configured yet.';
     } else if (health.isLoading) {
       statusText = 'Checking assessment service availability…';
     } else {
@@ -87,8 +86,7 @@ class _ServiceSettingsCardState extends ConsumerState<ServiceSettingsCard> {
       if (value != null && value.isConnected) {
         statusText = 'Assessment service is available.';
       } else {
-        statusText =
-            'Assessment service unavailable. Please try again or check Settings.';
+        statusText = 'Assessment service unavailable. Please try again or check Settings.';
       }
     }
 
@@ -115,7 +113,7 @@ class _ServiceSettingsCardState extends ConsumerState<ServiceSettingsCard> {
           const SizedBox(height: 6),
           Text(
             'Connect J\'ealth to the service that processes assessments. '
-            'Leave it empty when the service is not available.',
+            'Save a custom address to override the configured default.',
             style: muted,
           ),
           const SizedBox(height: 16),

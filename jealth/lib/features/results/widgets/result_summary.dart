@@ -117,6 +117,18 @@ class ResultSummary extends StatelessWidget {
                 label: 'Classified',
                 value: formatDateTime(context, record.timestamp),
               ),
+              if (record.modelScore case final score?)
+                _DetailRow(
+                  icon: Icons.analytics_outlined,
+                  label: 'Model score',
+                  value: formatModelScore(score),
+                ),
+              if (record.modelVersion case final version?)
+                _DetailRow(
+                  icon: Icons.info_outline_rounded,
+                  label: 'Model version',
+                  value: version,
+                ),
             ],
           ),
         ),

@@ -18,7 +18,7 @@ import '../support/fixtures.dart';
 
 Finder navItem(String label) => find.descendant(
   of: find.byWidgetPredicate((w) => w is NavigationBar || w is NavigationRail),
-  matching: find.text(label),
+  matching: find.byKey(ValueKey('navigation-$label')),
 );
 
 void main() {
@@ -35,10 +35,10 @@ void main() {
       expect(find.bySemanticsLabel('Page 1 of 3'), findsOneWidget);
 
       await tapKey(tester, 'onboarding-next');
-      expect(find.text('Enter patient measurements'), findsOneWidget);
+      expect(find.text('Enter health measurements'), findsOneWidget);
 
       await tapKey(tester, 'onboarding-next');
-      expect(find.text('Predictions are experimental'), findsOneWidget);
+      expect(find.text('Results are experimental'), findsOneWidget);
       expect(find.byKey(const ValueKey('onboarding-next')), findsNothing);
 
       await tapKey(tester, 'onboarding-get-started');
@@ -97,23 +97,23 @@ void main() {
       expect(find.byType(NavigationRail), findsNothing);
       expect(find.byType(HomeScreen), findsOneWidget);
 
-      await tester.tap(navItem('Classify'));
+      await tester.tap(navItem('classify'));
       await tester.pumpAndSettle();
       expect(find.byType(ClassificationScreen), findsOneWidget);
 
-      await tester.tap(navItem('History'));
+      await tester.tap(navItem('history'));
       await tester.pumpAndSettle();
       expect(find.byType(HistoryScreen), findsOneWidget);
 
-      await tester.tap(navItem('Analytics'));
+      await tester.tap(navItem('analytics'));
       await tester.pumpAndSettle();
       expect(find.byType(AnalyticsScreen), findsOneWidget);
 
-      await tester.tap(navItem('Learn'));
+      await tester.tap(navItem('learn'));
       await tester.pumpAndSettle();
       expect(find.byType(LearnScreen), findsOneWidget);
 
-      await tester.tap(navItem('Home'));
+      await tester.tap(navItem('home'));
       await tester.pumpAndSettle();
       expect(find.byType(HomeScreen), findsOneWidget);
     });
@@ -123,7 +123,7 @@ void main() {
       expect(find.byType(NavigationRail), findsOneWidget);
       expect(find.byType(NavigationBar), findsNothing);
 
-      await tester.tap(navItem('Analytics'));
+      await tester.tap(navItem('analytics'));
       await tester.pumpAndSettle();
       expect(find.byType(AnalyticsScreen), findsOneWidget);
     });

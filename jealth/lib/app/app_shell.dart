@@ -7,12 +7,14 @@ import '../core/widgets/jealth_logo.dart';
 /// A primary destination shown in the navigation bar / rail.
 class AppDestination {
   const AppDestination({
+    required this.id,
     required this.label,
     required this.icon,
     required this.selectedIcon,
     required this.tooltip,
   });
 
+  final String id;
   final String label;
   final IconData icon;
   final IconData selectedIcon;
@@ -21,30 +23,35 @@ class AppDestination {
   /// Display order matches the branch order in the router.
   static const List<AppDestination> all = [
     AppDestination(
+      id: 'home',
       label: 'Home',
       icon: Icons.home_outlined,
       selectedIcon: Icons.home_rounded,
       tooltip: 'Home dashboard',
     ),
     AppDestination(
+      id: 'classify',
       label: 'Assess',
       icon: Icons.monitor_heart_outlined,
       selectedIcon: Icons.monitor_heart_rounded,
       tooltip: 'Health assessment form',
     ),
     AppDestination(
+      id: 'history',
       label: 'History',
       icon: Icons.history_rounded,
       selectedIcon: Icons.history_rounded,
       tooltip: 'Saved assessment history',
     ),
     AppDestination(
+      id: 'analytics',
       label: 'Insights',
       icon: Icons.insights_outlined,
       selectedIcon: Icons.insights_rounded,
       tooltip: 'Personal assessment insights',
     ),
     AppDestination(
+      id: 'learn',
       label: 'Health education',
       icon: Icons.health_and_safety_outlined,
       selectedIcon: Icons.health_and_safety_rounded,
@@ -92,6 +99,7 @@ class AppShell extends StatelessWidget {
                 destinations: [
                   for (final d in AppDestination.all)
                     NavigationDestination(
+                      key: ValueKey('navigation-${d.id}'),
                       icon: Icon(d.icon),
                       selectedIcon: Icon(d.selectedIcon),
                       label: d.label,
@@ -151,7 +159,10 @@ class _SideNavigation extends StatelessWidget {
           destinations: [
             for (final d in AppDestination.all)
               NavigationRailDestination(
-                icon: Tooltip(message: d.tooltip, child: Icon(d.icon)),
+                icon: Tooltip(
+                  message: d.tooltip,
+                  child: Icon(d.icon, key: ValueKey('navigation-${d.id}')),
+                ),
                 selectedIcon: Icon(d.selectedIcon),
                 label: Text(d.label),
                 padding: const EdgeInsets.symmetric(vertical: 2),

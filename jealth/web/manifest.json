@@ -1,11 +1,11 @@
 {
-    "name": "J'ealth - AI-Powered Heart Disease Classification",
-    "short_name": "J'ealth",
+    "name": "J’ealth",
+    "short_name": "J’ealth",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#F5F8FC",
     "theme_color": "#146C94",
-    "description": "J'ealth is an educational machine learning demonstration for heart disease classification. It is not a medical diagnostic tool.",
+    "description": "J'ealth is an experimental digital health assessment tool for educational information. It is not a medical diagnostic tool.",
     "orientation": "any",
     "prefer_related_applications": false,
     "icons": [

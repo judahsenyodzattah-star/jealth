@@ -209,8 +209,8 @@ void main() {
 
     test('leaves measurements out unless the user opts in', () {
       final text = buildShareText(record, includeMeasurements: false);
-      expect(text, contains('Model predicted class: Heart Disease'));
-      expect(text, contains('not a clinical risk percentage'));
+      expect(text, contains('Assessment result: Heart Disease'));
+      expect(text, contains('not a diagnosis, a validated risk estimate'));
       expect(text, contains(AppConstants.resultDisclaimer));
       expect(text, isNot(contains('Cholesterol')));
       expect(text, isNot(contains('191')));

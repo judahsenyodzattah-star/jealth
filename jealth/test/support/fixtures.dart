@@ -173,7 +173,9 @@ Future<ProviderContainer> pumpJealthApp(
       historyStoreProvider.overrideWithValue(
         historyStore ?? InMemoryHistoryStore(),
       ),
-      if (service != null) predictionServiceProvider.overrideWithValue(service),
+      predictionServiceProvider.overrideWithValue(
+        service ?? const UnconfiguredPredictionService(),
+      ),
       if (shareService != null)
         shareServiceProvider.overrideWithValue(shareService),
       if (clock != null) clockProvider.overrideWithValue(clock),

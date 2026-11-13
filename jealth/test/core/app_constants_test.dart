@@ -20,11 +20,23 @@ void main() {
 
   test("app identity uses the J'ealth name", () {
     expect(AppConstants.appName, "J'ealth");
-    expect(AppConstants.subtitle, 'AI-Powered Heart Disease Classification');
-    expect(AppConstants.tagline, 'Explore Health Through Machine Learning');
+    expect(AppConstants.subtitle, 'Digital health assessment');
+    expect(AppConstants.tagline, 'Health Insights, Made Simple.');
   });
 
   group('ApiConfig', () {
+    test('uses the deployed API by default and respects an explicit build '
+        'configuration', () {
+      expect(ApiConfig.productionBaseUrl, 'https://jealth-api.onrender.com');
+      if (!ApiConfig.hasBuildTimeOverride) {
+        expect(ApiConfig.compiledBaseUrl, ApiConfig.productionBaseUrl);
+      }
+      expect(
+        ApiConfig.resolve().baseUrl,
+        ApiConfig.normalizeBaseUrl(ApiConfig.compiledBaseUrl),
+      );
+    });
+
     test('is not configured when no address is given', () {
       const config = ApiConfig(baseUrl: null);
       expect(config.isConfigured, isFalse);
@@ -47,6 +59,14 @@ void main() {
       final config = ApiConfig.resolve(runtimeBaseUrl: 'https://api.test/');
       expect(config.baseUrl, 'https://api.test');
       expect(config.isConfigured, isTrue);
+    });
+
+    test('an invalid runtime address does not displace the build default', () {
+      final config = ApiConfig.resolve(runtimeBaseUrl: 'not a URL');
+      expect(
+        config.baseUrl,
+        ApiConfig.normalizeBaseUrl(ApiConfig.compiledBaseUrl),
+      );
     });
   });
 

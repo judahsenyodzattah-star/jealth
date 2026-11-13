@@ -86,7 +86,7 @@ String historyStorageDescription() {
         "browser's local storage for this site. The encryption key is kept in "
         'the same browser, so anyone with access to this browser profile '
         'could read them. Avoid saving records on shared computers, and use '
-        '"Clear classification history" when you are done.';
+        '"Delete all saved health data" when you are done.';
   }
   return switch (defaultTargetPlatform) {
     TargetPlatform.android =>

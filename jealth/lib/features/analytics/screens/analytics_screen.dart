@@ -168,7 +168,7 @@ class _InsightTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
-      constraints: const BoxConstraints(minWidth: 150),
+      constraints: const BoxConstraints(minWidth: 150, maxWidth: 260),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: scheme.surfaceContainerLow,
@@ -180,12 +180,14 @@ class _InsightTile extends StatelessWidget {
         children: [
           Icon(icon, color: scheme.primary),
           const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(value, style: Theme.of(context).textTheme.titleLarge),
-              Text(label, style: Theme.of(context).textTheme.bodySmall),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(value, style: Theme.of(context).textTheme.titleLarge),
+                Text(label, style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
           ),
         ],
       ),

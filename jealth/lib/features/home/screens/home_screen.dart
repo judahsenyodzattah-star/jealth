@@ -351,7 +351,9 @@ class _HomeStep extends StatelessWidget {
     children: [
       Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
       const SizedBox(width: 8),
-      Text(label, style: Theme.of(context).textTheme.labelLarge),
+      Flexible(
+        child: Text(label, style: Theme.of(context).textTheme.labelLarge),
+      ),
     ],
   );
 }

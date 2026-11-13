@@ -1,15 +1,15 @@
-/// Configuration of the Phase B prediction backend (Python FastAPI).
+/// Configuration of the production prediction backend (Python FastAPI).
 ///
 /// Nothing in this file talks to the network. It only describes *where* the
 /// prediction service lives so that screens never hold URLs themselves.
 ///
 /// The base URL can be supplied in two ways (highest priority first):
-///  1. At runtime from Settings > Prediction service (stored in preferences).
+///  1. At runtime from Settings > Assessment service (stored in preferences).
 ///  2. At build time:
 ///     `flutter run --dart-define=JEALTH_API_BASE_URL=http://localhost:8000`
 ///
-/// When neither is present the application reports
-/// "Prediction service not connected" and never fabricates a result.
+/// Without either override the app uses [productionBaseUrl]. Passing an
+/// explicitly empty build-time value keeps the service disconnected.
 class ApiConfig {
   const ApiConfig({
     required this.baseUrl,
@@ -20,9 +20,19 @@ class ApiConfig {
     this.receiveTimeout = const Duration(seconds: 15),
   });
 
-  /// Build-time base URL. Empty when not provided.
+  /// URL used by release builds unless a build-time override is supplied.
+  static const String productionBaseUrl = 'https://jealth-api.onrender.com';
+
+  /// Whether a build-time override was explicitly supplied.
+  static const bool hasBuildTimeOverride = bool.hasEnvironment(
+    'JEALTH_API_BASE_URL',
+  );
+
+  /// Build-time base URL. Defaults to production; an explicit empty value
+  /// leaves the application disconnected.
   static const String compiledBaseUrl = String.fromEnvironment(
     'JEALTH_API_BASE_URL',
+    defaultValue: productionBaseUrl,
   );
 
   /// `POST` endpoint that accepts a patient record and returns a prediction.

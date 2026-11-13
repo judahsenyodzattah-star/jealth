@@ -72,7 +72,7 @@ Matcher failsWith(PredictionFailureType type) =>
 
 void main() {
   group('missing prediction service', () {
-    test('the default service is the unconfigured one', () {
+    test('the default service matches the resolved API configuration', () {
       final container = ProviderContainer(
         overrides: [
           preferencesLoaderProvider.overrideWithValue(
@@ -82,9 +82,13 @@ void main() {
       );
       addTearDown(container.dispose);
       final service = container.read(predictionServiceProvider);
-      expect(service, isA<UnconfiguredPredictionService>());
-      expect(service.isConfigured, isFalse);
-    }, skip: ApiConfig.compiledBaseUrl.isNotEmpty);
+      if (ApiConfig.resolve().isConfigured) {
+        expect(service, isA<HttpPredictionService>());
+      } else {
+        expect(service, isA<UnconfiguredPredictionService>());
+      }
+      expect(service.isConfigured, ApiConfig.resolve().isConfigured);
+    });
 
     test('predict fails with notConfigured and never returns a class', () {
       expect(
@@ -100,10 +104,10 @@ void main() {
     });
 
     test(
-      'the failure is described as "not connected" and is not retryable',
+      'an unconfigured service is clearly described and is not retryable',
       () {
         const error = PredictionException(PredictionFailureType.notConfigured);
-        expect(error.title, 'Prediction service not connected');
+        expect(error.title, 'Assessment service unavailable');
         expect(error.message, contains('No result was generated'));
         expect(error.canRetry, isFalse);
       },
@@ -143,6 +147,10 @@ void main() {
         await container.read(appStartupProvider.future);
         final settings = container.read(apiSettingsControllerProvider.notifier);
 
+        expect(
+          container.read(apiConfigProvider).baseUrl,
+          ApiConfig.normalizeBaseUrl(ApiConfig.compiledBaseUrl),
+        );
         expect(await settings.setBaseUrl('not a url'), isNotNull);
         expect(await settings.setBaseUrl('http://localhost:8000/'), isNull);
         expect(
@@ -156,6 +164,12 @@ void main() {
         expect(
           container.read(preferencesProvider).getString(PrefKeys.apiBaseUrl),
           'http://localhost:8000',
+        );
+        expect(await settings.setBaseUrl(''), isNull);
+        expect(container.read(apiSettingsControllerProvider), isNull);
+        expect(
+          container.read(apiConfigProvider).baseUrl,
+          ApiConfig.normalizeBaseUrl(ApiConfig.compiledBaseUrl),
         );
       },
     );

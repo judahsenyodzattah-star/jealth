@@ -12,7 +12,7 @@ import '../support/fixtures.dart';
 import 'onboarding_navigation_test.dart' show navItem;
 
 Future<void> openForm(WidgetTester tester) async {
-  await tester.tap(navItem('Classify'));
+  await tester.tap(navItem('classify'));
   await tester.pumpAndSettle();
 }
 
@@ -80,7 +80,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Age must be a positive whole number.'), findsNothing);
       expect(
-        find.textContaining('Outside the range seen in the training data'),
+        find.textContaining('outside the usual range for this assessment'),
         findsOneWidget,
       );
     });
@@ -117,16 +117,16 @@ void main() {
       await tester.enterText(find.byKey(const ValueKey('field-age')), '68');
       await tester.pump();
 
-      await tester.tap(navItem('Learn'));
+      await tester.tap(navItem('learn'));
       await tester.pumpAndSettle();
-      await tester.tap(navItem('Classify'));
+      await tester.tap(navItem('classify'));
       await tester.pumpAndSettle();
 
       expect(fieldText(tester, 'age'), '68');
     });
   });
 
-  group('prediction service not connected', () {
+  group('assessment service unavailable', () {
     testWidgets('submitting explains that no service is connected', (
       tester,
     ) async {
@@ -137,17 +137,17 @@ void main() {
         size: const Size(1000, 3000),
       );
       await openForm(tester);
-      expect(find.text('Prediction service not connected'), findsOneWidget);
+      expect(find.text('Assessment service unavailable'), findsOneWidget);
 
       await fillClassificationForm(tester);
       await tapKey(tester, 'predict');
 
       expect(find.byType(ResultScreen), findsOneWidget);
-      expect(find.text('Prediction service not connected'), findsOneWidget);
+      expect(find.text('Assessment service unavailable'), findsOneWidget);
       expect(find.textContaining('No result was generated'), findsOneWidget);
       // No class, score or save action may appear without a real response.
       expect(find.byKey(const ValueKey('result-class-label')), findsNothing);
-      expect(find.text('MODEL PREDICTED CLASS'), findsNothing);
+      expect(find.text('ASSESSMENT RESULT'), findsNothing);
       expect(find.byKey(const ValueKey('result-save')), findsNothing);
       expect(find.byKey(const ValueKey('result-retry')), findsNothing);
       // The measurements are echoed back so the user can check them.
@@ -155,10 +155,10 @@ void main() {
       expect(store.entries, isEmpty);
     });
 
-    testWidgets('Home says the service is not connected', (tester) async {
+    testWidgets('Home reports an unconfigured service', (tester) async {
       await pumpJealthApp(tester, size: const Size(1000, 3000));
       expect(find.byType(HomeScreen), findsOneWidget);
-      expect(find.textContaining('not connected'), findsWidgets);
+      expect(find.textContaining('not configured'), findsWidgets);
     });
   });
 
@@ -185,7 +185,7 @@ void main() {
       await tapKey(tester, 'predict');
 
       expect(service.requests.single.toJson(), contractExampleInput.toJson());
-      expect(find.text('MODEL PREDICTED CLASS'), findsOneWidget);
+      expect(find.text('ASSESSMENT RESULT'), findsOneWidget);
       expect(
         tester
             .widget<Text>(find.byKey(const ValueKey('result-class-label')))
@@ -195,11 +195,11 @@ void main() {
       expect(find.text('Model score'), findsOneWidget);
       expect(find.text('0.61'), findsOneWidget);
       expect(
-        find.textContaining('not a validated clinical risk'),
+        find.textContaining('not a diagnosis, a validated risk estimate'),
         findsOneWidget,
       );
       expect(find.text('fixture-model'), findsOneWidget);
-      expect(find.text('Educational use only'), findsOneWidget);
+      expect(find.textContaining('not a diagnosis'), findsNWidgets(2));
       expect(find.textContaining('%'), findsNothing);
 
       // Nothing is saved until the user asks.
@@ -257,7 +257,7 @@ void main() {
       await tester.tap(predict);
       await tester.pump();
 
-      expect(find.text('Classifying…'), findsOneWidget);
+      expect(find.text('Reviewing…'), findsOneWidget);
       expect(tester.widget<FilledButton>(predict).onPressed, isNull);
       await tester.tap(predict, warnIfMissed: false);
       await tester.pump();
@@ -287,7 +287,7 @@ void main() {
       await fillClassificationForm(tester);
       await tapKey(tester, 'predict');
 
-      expect(find.text('The prediction service took too long'), findsOneWidget);
+      expect(find.text('Assessment service timed out'), findsOneWidget);
       expect(find.byKey(const ValueKey('result-class-label')), findsNothing);
       expect(find.textContaining('Exception'), findsNothing);
 
@@ -311,11 +311,14 @@ void main() {
       await fillClassificationForm(tester);
       await tapKey(tester, 'predict');
 
-      expect(find.text('Unexpected response from the service'), findsOneWidget);
+      expect(
+        find.text('Assessment service returned an unexpected result'),
+        findsOneWidget,
+      );
       expect(find.byKey(const ValueKey('result-class-label')), findsNothing);
     });
 
-    testWidgets('"Classify Another Patient" returns to an empty form', (
+    testWidgets('"Start another assessment" returns to an empty form', (
       tester,
     ) async {
       await pumpJealthApp(
@@ -359,11 +362,20 @@ void main() {
 
       await tapKey(tester, 'share-confirm');
       expect(share.shared, hasLength(1));
-      expect(
-        share.shared.single,
-        contains('Model predicted class: Heart Disease'),
-      );
+      expect(share.shared.single, contains('Assessment result: Heart Disease'));
       expect(share.shared.single, isNot(contains('Cholesterol')));
+
+      await tapKey(tester, 'result-share');
+      final measurementsToggle = find.byKey(
+        const ValueKey('share-include-measurements'),
+      );
+      expect(tester.widget<SwitchListTile>(measurementsToggle).value, isFalse);
+      await tester.tap(measurementsToggle);
+      await tester.pumpAndSettle();
+      expect(share.shared, hasLength(1), reason: 'previewing shares nothing');
+      await tapKey(tester, 'share-confirm');
+      expect(share.shared, hasLength(2));
+      expect(share.shared.last, contains('Cholesterol: 191'));
     });
   });
 }

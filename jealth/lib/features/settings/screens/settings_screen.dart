@@ -141,6 +141,14 @@ class SettingsScreen extends ConsumerWidget {
                 onTap: () => context.push(AppRoutes.about),
               ),
               ListTile(
+                key: const ValueKey('settings-model-info'),
+                leading: const Icon(Icons.model_training_outlined),
+                title: const Text('Model information'),
+                subtitle: const Text('Training data, results and limitations'),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => context.push(AppRoutes.modelInfo),
+              ),
+              ListTile(
                 key: const ValueKey('settings-licenses'),
                 leading: const Icon(Icons.description_outlined),
                 title: const Text('Licenses and acknowledgements'),

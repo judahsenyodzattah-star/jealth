@@ -24,7 +24,7 @@ InMemoryHistoryStore seededStore() => InMemoryHistoryStore({
 });
 
 Future<void> openHistory(WidgetTester tester) async {
-  await tester.tap(navItem('History'));
+  await tester.tap(navItem('history'));
   await tester.pumpAndSettle();
 }
 
@@ -36,7 +36,7 @@ void main() {
       await pumpJealthApp(tester, size: tall);
       await openHistory(tester);
 
-      expect(find.text('No saved classifications yet'), findsOneWidget);
+      expect(find.text('No saved assessments yet'), findsOneWidget);
       expect(find.byType(HistoryRecordTile), findsNothing);
       expect(find.byKey(const ValueKey('history-clear-all')), findsNothing);
       expect(find.text('What is stored on this device?'), findsOneWidget);
@@ -53,7 +53,7 @@ void main() {
       store.failReads = false;
       await tester.tap(find.text('Try again'));
       await tester.pumpAndSettle();
-      expect(find.text('No saved classifications yet'), findsOneWidget);
+      expect(find.text('No saved assessments yet'), findsOneWidget);
     });
 
     testWidgets('unreadable records are reported, not shown', (tester) async {
@@ -82,7 +82,7 @@ void main() {
           .toList();
 
       expect(order(), ['rec-b', 'rec-a']);
-      expect(find.text('2 saved classifications'), findsOneWidget);
+      expect(find.text('2 saved assessments'), findsOneWidget);
 
       await tapKey(tester, 'history-sort');
       expect(order(), ['rec-a', 'rec-b']);
@@ -103,7 +103,7 @@ void main() {
             .id,
         'rec-b',
       );
-      expect(find.text('Showing 1 of 2 saved classifications'), findsOneWidget);
+      expect(find.text('Showing 1 of 2 saved assessments'), findsOneWidget);
 
       await tester.tap(find.widgetWithText(FilterChip, 'All'));
       await tester.pumpAndSettle();
@@ -128,9 +128,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(HistoryDetailScreen), findsOneWidget);
-      expect(find.text('MODEL PREDICTED CLASS'), findsOneWidget);
+      expect(find.text('ASSESSMENT RESULT'), findsOneWidget);
       expect(find.text('Submitted measurements'), findsOneWidget);
-      expect(find.text('Educational use only'), findsOneWidget);
+      expect(find.textContaining('not a diagnosis'), findsNWidgets(2));
     });
 
     testWidgets('deleting one record asks first', (tester) async {
@@ -190,7 +190,7 @@ void main() {
       await openHistory(tester);
 
       await tapKey(tester, 'history-clear-all');
-      expect(find.text('Clear classification history?'), findsOneWidget);
+      expect(find.text('Clear assessment history?'), findsOneWidget);
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
       expect(store.entries, hasLength(3));
@@ -200,7 +200,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(store.entries, isEmpty, reason: 'unreadable records go too');
-      expect(find.text('No saved classifications yet'), findsOneWidget);
+      expect(find.text('No saved assessments yet'), findsOneWidget);
     });
 
     testWidgets('Settings can delete all saved health data', (tester) async {
@@ -219,7 +219,7 @@ void main() {
 
       expect(store.entries, isEmpty);
       expect(
-        find.text('No classifications are saved on this device.'),
+        find.text('No assessments are saved on this device.'),
         findsOneWidget,
       );
     });
